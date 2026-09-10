@@ -168,7 +168,8 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
         }
         if (!is.null(select)) {
-          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = TRUE)
+          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = FALSE)
+          x[[i]] <- magclass::collapseNames(x[[i]], collapsedim = names(select))
         }
       }
       if (addAttributes) {
