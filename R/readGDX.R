@@ -127,11 +127,20 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           }
           x[[i]] <- x[[i]]$records
 
-          if (uniqueStyle == "classic") colnames(x[[i]]) <- .adaptEnumeration(colnames(x[[i]]))
+         if (uniqueStyle == "classic") colnames(x[[i]]) <- .adaptEnumeration(colnames(x[[i]]))
 
-          if (!stringsAsFactors) x[[i]] <- data.frame(lapply(x[[i]], as.character), stringsAsFactors = FALSE)
-
-          if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+         if (!stringsAsFactors) {
+            x[[i]] <- data.frame(lapply(x[[i]], as.character), stringsAsFactors = FALSE)
+            # drop columns without values
+            for (j in colnames(x[[i]])) {
+              if (all(x[[i]][[j]] == "" | is.na(x[[i]][[j]]))) {
+                x[[i]][[j]] <- NULL
+              }
+            }
+            if (dim(x[[i]])[2] == 1) x[[i]] <- as.vector(x[[i]][[1]])
+         } else {
+           if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+         }
         }
       } else if (m$class == "Alias") {
         if (followAlias) x[[i]] <- readGDX(gdx, x[[i]]$aliasWith, followAlias = TRUE)
